@@ -1,0 +1,10 @@
+//struct Pt p; //Gresit: "struct Pt" nu exista
+double x;
+int f(int x) //Corect: argumentele pot redefini variabile globale
+{
+int x; //Gresit: o variabila locala in blocul functiei nu poate avea acelasi nume ca un argument
+{
+int x; //Corect: in interiorul un bloc {...} se pot redefini orice variabile
+double x; //Gresit: redefinirea lui "x" definit anterior in acest bloc
+}
+}
