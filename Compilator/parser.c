@@ -47,32 +47,38 @@ Symbol* addSymbol(Symbols* symbols, const char* name, int cls)
 
 Symbol* findSymbol(Symbols* symbols, const char* name)
 {
-	if(symbols->begin==NULL)
-		return NULL;
-	
-	Symbol *it = *symbols->end;
-	it--;
-	
-	printf("%s", it->name);
 	int contor = symbols->end - symbols->begin;
 	
-	for (int i=0;i<contor;i++)
+	for (int i=contor-1;i>=0;i--)
 	{
-		if (it != NULL)
+		if (symbols->begin[i] != NULL)
 		{
-			if (it->name != NULL && strcmp(it->name, name) == 0)
-				return it;
+			if (symbols->begin[i]->name != NULL && name!=NULL && strcmp(symbols->begin[i]->name, name) == 0)
+				return symbols->begin[i];
 		}
-		else break;
-
-		it--;
 	}
 	return NULL;
 }
 
 void deleteSymbolsAfter(Symbols *symbols, Symbol *start)
 {
-	
+	int contor = symbols->end - symbols->begin;
+
+	for (int i = 0; i < contor; i++)
+	{
+		if (symbols->begin[i] != NULL)
+		{
+			if (symbols->begin[i] == start)
+			{
+				i++;
+				for (int j = i; j < contor; j++)
+				{
+					symbols->begin[j] = NULL;
+				}
+				return;
+			}
+		}
+	}
 }
 
 

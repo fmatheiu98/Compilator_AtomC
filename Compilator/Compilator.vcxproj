@@ -24,7 +24,10 @@
     <ClCompile Include="parser.c" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="8.txt" />
+    <Text Include="9.txt" />
     <Text Include="code.txt" />
+    <Text Include="domain_test.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />

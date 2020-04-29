@@ -1,0 +1,13 @@
+int x;
+
+//int x;	//eroare
+
+int f(int x, int y)
+{
+	int n;
+	//int x;	//eroare
+	x=1;
+	for(;;){
+		int x;
+	}
+}

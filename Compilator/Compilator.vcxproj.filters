@@ -27,6 +27,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="code.txt" />
+    <Text Include="domain_test.txt" />
+    <Text Include="9.txt" />
+    <Text Include="8.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
