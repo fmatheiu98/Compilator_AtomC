@@ -53,7 +53,7 @@ int main()
 		perror("");
 		exit(11);
 	}
-	FILE* fis = fopen("9.txt", "rt");
+	FILE* fis = fopen("code.txt", "rt");
 	if (fis == NULL)
 	{
 		perror("Eroare deschidere fisier.");

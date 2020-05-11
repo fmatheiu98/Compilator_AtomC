@@ -26,6 +26,7 @@
   <ItemGroup>
     <Text Include="8.txt" />
     <Text Include="9.txt" />
+    <Text Include="analiza_tipuri.txt" />
     <Text Include="code.txt" />
     <Text Include="domain_test.txt" />
   </ItemGroup>
