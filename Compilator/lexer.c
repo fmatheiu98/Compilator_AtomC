@@ -60,8 +60,6 @@ char* createString(char* start, char* end)
 		}
 	}
 	t[end - start] = '\0';
-	printf("%s", t);
-	printf("\n\n\n\n\n\n");
 	return t;
 }
 
@@ -78,7 +76,7 @@ int getNextTk()
 		SAFEALLOC(tk, Token)
 			tk->text = NULL;
 		char ch = *pch;
-		printf("#%d %c(%d)\n", s, ch, ch); //afisez fiecare tranzitie, pentru verificare(stare...car_curent)
+		//printf("#%d %c(%d)\n", s, ch, ch); //afisez fiecare tranzitie, pentru verificare(stare...car_curent)
 		switch (s)
 		{
 		case 0: if (isalpha(ch) || ch == '_') { pStartCh = pch; s = 1; pch++; }
@@ -160,8 +158,6 @@ int getNextTk()
 		case 10: nCh = pch - pStartCh;
 			tk->text = (char*)malloc((nCh - 1) * sizeof(char));
 			tk = addTk(CT_STRING);
-			//strcpy(tx, "");
-			//strcpy(tk->text, "");
 			tk->text = createString(pStartCh + 1, pch - 1);
 			tk->text[strlen(tk->text) - 4] = '\0';
 			return tk->code;
@@ -189,7 +185,6 @@ int getNextTk()
 			   break;
 		case 16: nCh = pch - pStartCh;
 			tk = addTk(CT_INT);
-			//tk->i = atoi(createString(pStartCh, pch));
 			char* nr;
 			nr = (char*)malloc(255 * sizeof(char));
 			char* ptr;
@@ -204,7 +199,6 @@ int getNextTk()
 				{
 					tk->are_hexa = 1;
 					tk->i = strtol(nr, &ptr, 16);
-					//printf("\n\n\n%#x\n\n\n", tk->i);
 				}
 				else
 				{

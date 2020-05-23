@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="lexer.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="mv.c" />
     <ClCompile Include="parser.c" />
   </ItemGroup>
   <ItemGroup>

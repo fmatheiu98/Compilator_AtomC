@@ -62,6 +62,23 @@ Symbol* findSymbol(Symbols* symbols, const char* name)
 	return NULL;
 }
 
+Symbol* requireSymbol(Symbols* symbols, const char* name)
+{
+	if (!symbols)
+		err("Symbol not found in TS.");
+	int contor = symbols->end - symbols->begin;
+
+	for (int i = contor - 1; i >= 0; i--)
+	{
+		if (symbols->begin[i] != NULL)
+		{
+			if (symbols->begin[i]->name != NULL && name != NULL && strcmp(symbols->begin[i]->name, name) == 0)
+				return symbols->begin[i];
+		}
+	}
+	err("Symbol not found in TS.");
+}
+
 void deleteSymbolsAfter(Symbols *symbols, Symbol *start)
 {
 	int contor = symbols->end - symbols->begin;
@@ -1181,10 +1198,11 @@ int exprPrimary(RetVal *rv)////////////////////////
 	return 0;
 }
 
-Symbol* addExtFunc(const char* name, Type type)
+Symbol* addExtFunc(const char* name, Type type,void *addr)
 {
 	Symbol* s = addSymbol(&symbols, name, CLS_EXTFUNC);
 	s->type = type;
+	s->addr = addr;
 	initSymbols(&s->args);
 	return s;
 }
@@ -1195,31 +1213,42 @@ Symbol* addFuncArg(Symbol* func, const char* name, Type type)
 	return a;
 }
 
+void put_i()
+{
+	printf("#%d\n", popi());
+}void put_d()
+{
+	printf("#%lf\n", popd());
+}void put_c()
+{
+	printf("#%c\n", popc());
+}
+
 void addExtFuncs()
 {
 	Symbol* s;
-	s = addExtFunc("put_s", createType(TB_VOID, -1));
-	addFuncArg(s, "s", createType(TB_CHAR, 0));
+	//s = addExtFunc("put_s", createType(TB_VOID, -1));
+	//addFuncArg(s, "s", createType(TB_CHAR, 0));
 
-	s = addExtFunc("get_s", createType(TB_VOID, -1));
-	addFuncArg(s, "s", createType(TB_CHAR, 0));
+	//s = addExtFunc("get_s", createType(TB_VOID, -1));
+	//addFuncArg(s, "s", createType(TB_CHAR, 0));
 
-	s = addExtFunc("put_i", createType(TB_VOID, -1));
+	s = addExtFunc("put_i", createType(TB_VOID, -1),put_i);
 	addFuncArg(s, "i", createType(TB_INT, -1));
 
-	s = addExtFunc("get_i", createType(TB_INT, -1));
+	//s = addExtFunc("get_i", createType(TB_INT, -1));
 
-	s = addExtFunc("put_d", createType(TB_VOID, -1));
+	s = addExtFunc("put_d", createType(TB_VOID, -1),put_d);
 	addFuncArg(s, "d", createType(TB_DOUBLE, -1));
 
-	s = addExtFunc("get_d", createType(TB_DOUBLE, -1));
+	//s = addExtFunc("get_d", createType(TB_DOUBLE, -1));
 
-	s = addExtFunc("put_c", createType(TB_VOID, -1));
+	s = addExtFunc("put_c", createType(TB_VOID, -1),put_c);
 	addFuncArg(s, "c", createType(TB_CHAR, -1));
 
-	s = addExtFunc("get_c", createType(TB_CHAR, -1));
+	//s = addExtFunc("get_c", createType(TB_CHAR, -1));
 
-	s = addExtFunc("seconds", createType(TB_DOUBLE, -1));
+	//s = addExtFunc("seconds", createType(TB_DOUBLE, -1));
 }
 
 void parser()
@@ -1229,7 +1258,7 @@ void parser()
 	crtTk = tokens;
 	if (unit())
 	{
-		printf("Sintaxa OK.");
+		printf("Sintaxa OK.\n\n");
 	}
 	else
 	{

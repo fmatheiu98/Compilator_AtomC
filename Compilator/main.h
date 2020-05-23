@@ -6,6 +6,10 @@
 #include<math.h>
 #include<stdarg.h>
 #define SAFEALLOC(var,Type) if((var=(Type*)malloc(sizeof(Type)))==NULL)err("not enough memory");
+#define STACK_SIZE (32*1024)
+#define GLOBAL_SIZE (32*1024)
+
+
 #pragma once
 #ifndef PROGRAM
 
@@ -43,6 +47,7 @@ char* codeName(int code);//ret. numele lui tk ID->>ID
 void parser();
 
 
+
 enum { TB_INT, TB_DOUBLE, TB_CHAR, TB_STRUCT, TB_VOID };
 
 
@@ -72,6 +77,10 @@ typedef struct _Symbol {
 		Symbols args; // used only of functions
 		Symbols members; // used only for structs
 	};
+	union {
+		void* addr; // vm: the memory address for global symbols
+		int offset; // vm: the stack offset for local symbols
+	};
 }Symbol;
 
 typedef union {
@@ -88,7 +97,47 @@ typedef struct {
 }RetVal;
 
 
+char stack[STACK_SIZE];
+char* SP; // Stack Pointer
+char* stackAfter; // first byte after stack; used for stack limit tests
 
+enum { O_PUSHCT_A, O_PUSHCT_I, O_STORE, O_LOAD, O_CALLEXT, O_SUB_I, O_JT_I, O_HALT, O_CALL, O_CAST_I_D,
+	O_DROP, O_ENTER, O_EQ_D , O_INSERT , O_OFFSET, O_PUSHFPADDR, O_RET, O_SUB_D}; // all opcodes; each one starts with O_
+typedef struct _Instr {
+	int opcode; // O_*
+	union {
+		long int i; // int, char
+		double d;
+		void* addr;
+	}args[2];
+	struct _Instr* last, * next; // links to last, next instructions
+}Instr;
+Instr* instructions, * lastInstruction; // double linked list
+
+Instr* addInstrAfter(Instr* after, int opcode);
+Instr* addInstr(int opcode);
+Instr* addInstrA(int opcode, void* addr);
+Instr* addInstrI(int opcode, int val);
+Instr* addInstrII(int opcode, int val1, int val2);
+void deleteInstructionsAfter(Instr* start);
+
+char globals[GLOBAL_SIZE];
+int nGlobals;
+
+void* allocGlobal(int size);
+
+void pushd(double d);
+double popd();
+void pusha(void *a);
+void* popa();
+void pushi(int i);
+int popi();
+void pushc(char c);
+char popc();
+
+void run(Instr* IP);
+
+Symbol* requireSymbol(Symbols* symbols, const char* name);
 
 #endif
 

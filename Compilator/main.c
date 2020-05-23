@@ -45,6 +45,29 @@ void err(const char* fmt, ...)
 	exit(-1);
 }
 
+void mvTest()
+{
+	Instr* L1;
+	int* v = allocGlobal(sizeof(long int));
+	addInstrA(O_PUSHCT_A, v);
+	addInstrI(O_PUSHCT_I, 3);
+	addInstrI(O_STORE, sizeof(long int));
+	L1 = addInstrA(O_PUSHCT_A, v);
+	addInstrI(O_LOAD, sizeof(long int));
+	addInstrA(O_CALLEXT, requireSymbol(&symbols, "put_i")->addr);
+	addInstrA(O_PUSHCT_A, v);
+	addInstrA(O_PUSHCT_A, v);
+	addInstrI(O_LOAD, sizeof(long int));
+	addInstrI(O_PUSHCT_I, 1);
+	addInstr(O_SUB_I);
+	addInstrI(O_STORE, sizeof(long int));
+	addInstrA(O_PUSHCT_A, v);
+	addInstrI(O_LOAD, sizeof(long int));
+	addInstrA(O_JT_I, L1);
+	addInstr(O_HALT);
+}
+
+
 int main()
 {
 	char* buf = (char*)malloc(30000 * sizeof(char));
@@ -72,5 +95,7 @@ int main()
 	afisare_atomi();
 	parser();
 	
+	mvTest();
+	run(instructions);
 	return 0;
 }
