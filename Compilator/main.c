@@ -7,7 +7,7 @@
 #include<stdarg.h>
 #include "main.h"
 
-Token* tokens;
+Token* tokens; //inceputul listei atomilor lexicali
 Symbols symbols;
 int crtDepth;// ("adancimea" contextului curent, initial 0)
 Symbol* crtFunc;// (pointer la simbolul functiei daca in functie, altfel NULL)
@@ -45,6 +45,14 @@ void err(const char* fmt, ...)
 	exit(-1);
 }
 
+/*
+ v=3;
+ do{
+	put_i(v);
+	v=v-1;
+}while(v);
+*/
+
 void mvTest()
 {
 	Instr* L1;
@@ -76,7 +84,7 @@ int main()
 		perror("");
 		exit(11);
 	}
-	FILE* fis = fopen("code.txt", "rt");
+	FILE* fis = fopen("8.txt", "rt");
 	if (fis == NULL)
 	{
 		perror("Eroare deschidere fisier.");
@@ -93,9 +101,9 @@ int main()
 
 	lexer(buf);
 	afisare_atomi();
-	parser();
+	//parser();
 	
-	mvTest();
-	run(instructions);
+	//mvTest();
+	//run(instructions);
 	return 0;
 }

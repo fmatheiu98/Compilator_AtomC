@@ -84,7 +84,7 @@ typedef struct _Symbol {
 }Symbol;
 
 typedef union {
-	long int i; // int, char
+	int i; // int, char
 	double d; // double
 	const char* str; // char[]
 }CtVal;
@@ -106,7 +106,7 @@ enum { O_PUSHCT_A, O_PUSHCT_I, O_STORE, O_LOAD, O_CALLEXT, O_SUB_I, O_JT_I, O_HA
 typedef struct _Instr {
 	int opcode; // O_*
 	union {
-		long int i; // int, char
+		int i; // int, char
 		double d;
 		void* addr;
 	}args[2];

@@ -253,7 +253,7 @@ void run(Instr* IP)
 		case O_SUB_I:
 			iVal1 = popi();
 			iVal2 = popi();
-			printf("SUB_D\t(%d-%d -> %d)\n", iVal2, iVal1, iVal2 - iVal1);
+			printf("SUB_I\t(%d-%d -> %d)\n", iVal2, iVal1, iVal2 - iVal1);
 			pushi(iVal2 - iVal1);
 			IP = IP->next;
 			break;

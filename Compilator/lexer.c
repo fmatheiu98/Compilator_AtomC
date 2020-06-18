@@ -11,8 +11,9 @@
 extern Token* tokens;
 Token* lastToken;
 int line = 1;
-char* pch;
+char* pch;//caracterul curent din sirul de caractere preluat din fisierul de intrare
 
+//adaugare Tk in lista
 Token* addTk(int code)
 {
 	Token* tk;
@@ -31,6 +32,7 @@ Token* addTk(int code)
 	return tk;
 }
 
+//pt. setarea atributului text din Token
 char* createString(char* start, char* end)
 {
 	char* t = (char*)malloc((end - start) * sizeof(char));
@@ -42,6 +44,7 @@ char* createString(char* start, char* end)
 	int tt = 0;
 	for (int i = 0; i < end - start; i++)
 	{
+		//daca e un caracter special, se pune in variabila string t acel caracter
 		if (start[i] == '\\' && start[i + 1] != '\0')
 		{
 			if (start[i + 1] == 't')
@@ -53,7 +56,7 @@ char* createString(char* start, char* end)
 			else t[tt++] = start[i + 1];
 			i++;
 		}
-		else
+		else//altfel se pune caracterul din memorie
 		{
 
 			t[tt++] = start[i];
@@ -63,11 +66,12 @@ char* createString(char* start, char* end)
 	return t;
 }
 
+//adauga in lista de AL urmatorul AL din sirul de intrare si ii returneaza codul
 int getNextTk()
 {
-	int s = 0, nCh;//state
+	int s = 0, nCh;//pleaca din starea 0
 
-	char* pStartCh = NULL;
+	char* pStartCh = NULL;//tine minte pointerul de start pentru siruri de caractere, numere...
 
 	Token* tk;
 	char* tx = (char*)malloc(1000 * sizeof(char));
@@ -75,7 +79,7 @@ int getNextTk()
 	{
 		SAFEALLOC(tk, Token)
 			tk->text = NULL;
-		char ch = *pch;
+		char ch = *pch;//iterator prin caracterele din pch
 		//printf("#%d %c(%d)\n", s, ch, ch); //afisez fiecare tranzitie, pentru verificare(stare...car_curent)
 		switch (s)
 		{
@@ -106,13 +110,13 @@ int getNextTk()
 			  else if (ch == '>') { s = 53; pch++; }
 			  else if (ch == '/') { s = 11; pch++; }
 			  else if (ch == '\0') { s = 57; pch++; }
-			  else tkerr(tk, "caracter necunoscut");
+			  else tkerr(tk, "caracter necunoscut");//daca nu e un caracter cunoscut si starea nu accepta else, este o eroare
 			break;
 		case 1: if (isalnum(ch) || ch == '_') { pch++; }
 			  else { s = 2; }
 			  break;
-		case 2: nCh = pch - pStartCh;
-			if (nCh == 5 && !memcmp(pStartCh, "break", 5)) tk = addTk(BREAK);
+		case 2: nCh = pch - pStartCh; //starea pentru ID-uri
+			if (nCh == 5 && !memcmp(pStartCh, "break", 5)) tk = addTk(BREAK);//daca primele 5 caractere de la poz. pStartCh mai incolo sunt 'break' si nr. de caractere =5 inseamna ca ID-ul este un cuvant cheie.
 			else if (nCh == 4 && !memcmp(pStartCh, "char", 4)) tk = addTk(CHAR);
 			else if (nCh == 6 && !memcmp(pStartCh, "double", 6)) tk = addTk(DOUBLE);
 			else if (nCh == 4 && !memcmp(pStartCh, "else", 4)) tk = addTk(ELSE);
@@ -126,7 +130,7 @@ int getNextTk()
 			else {
 				tk->text = (char*)malloc(nCh * sizeof(char));
 				tk = addTk(ID);
-				tk->text = createString(pStartCh, pch);
+				tk->text = createString(pStartCh, pch);//se pune in campul text un sir de caractere care incepe la poz. pStartCh si se termina la pch
 			}
 			return tk->code;
 		case 3: if (ch == '\\') { s = 4; pch++; }
@@ -189,20 +193,20 @@ int getNextTk()
 			nr = (char*)malloc(255 * sizeof(char));
 			char* ptr;
 			nr = createString(pStartCh, pch);
-			if (nr[0] == '0' && nr[1] != 'x')
+			if (nr[0] == '0' && nr[1] != 'x')//baza 8
 			{
 				tk->are_octal = 1;
 				tk->i = strtol(nr, &ptr, 8);
 			}
 			else
-				if (nr[0] == '0' && nr[1] == 'x')
+				if (nr[0] == '0' && nr[1] == 'x')//baza 16
 				{
 					tk->are_hexa = 1;
 					tk->i = strtol(nr, &ptr, 16);
 				}
 				else
 				{
-					tk->i = strtol(nr, &ptr, 10);
+					tk->i = strtol(nr, &ptr, 10);//baza 10
 				}
 			return CT_INT;
 		case 17: if (ch == 'x') { s = 18; pch++; }
@@ -245,7 +249,7 @@ int getNextTk()
 			tk = addTk(CT_REAL);
 			tk->r = atof(createString(pStartCh, pch));
 			if (strchr(createString(pStartCh, pch), 'e') || strchr(createString(pStartCh, pch), 'E'))
-				tk->are_exp = 1;
+				tk->are_exp = 1;//pt. exponent
 			return CT_REAL;
 		case 28: addTk(COMMA);
 			return COMMA;
@@ -313,7 +317,7 @@ int getNextTk()
 			return DIV;
 		case 57: addTk(END);
 			return END;
-		default: tkerr(tk, "Stare invalida %d", s);
+		default: tkerr(tk, "Stare invalida %d", s);//daca se afla intr-o alta stare decat 0-57, avem eroare
 			break;
 		}
 	}
@@ -326,6 +330,7 @@ void lexer(char *buf)
 		tokens = lastToken = NULL;
 	pch = buf;
 
+	//cat timp AL != END, preia atomii din DT
 	while (getNextTk() != END)
 	{
 
@@ -334,7 +339,7 @@ void lexer(char *buf)
 
 void afisare_atomi() {
 
-	//afisare atomi -> linie :: atom:<nume_id>/<valoare constante>
+	//afisare atomi -> linie :: atom:<nume_id>/<valoare constanta>
 
 	for (Token* t1 = tokens; t1 != NULL; t1 = t1->next)
 	{

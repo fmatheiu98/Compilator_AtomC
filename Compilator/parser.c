@@ -13,7 +13,7 @@ Token* crtTk;
 Token* consumedTk;
 char ret[200];
 
-extern Symbols symbols;
+extern Symbols symbols; //tabela de simboluri
 extern int crtDepth;// ("adancimea" contextului curent, initial 0)
 extern Symbol* crtFunc;// (pointer la simbolul functiei daca in functie, altfel NULL)
 extern Symbol* crtStruct;
@@ -45,7 +45,7 @@ Symbol* addSymbol(Symbols* symbols, const char* name, int cls)
 	return s;
 }
 
-Symbol* findSymbol(Symbols* symbols, const char* name)
+Symbol* findSymbol(Symbols* symbols, const char* name)//returneaza simbolul gasit sau NULL daca nu il gaseste.(cautarea de la dreapta la stanga)
 {
 	if (!symbols)
 		return NULL;
@@ -79,7 +79,7 @@ Symbol* requireSymbol(Symbols* symbols, const char* name)
 	err("Symbol not found in TS.");
 }
 
-void deleteSymbolsAfter(Symbols *symbols, Symbol *start)
+void deleteSymbolsAfter(Symbols *symbols, Symbol *start)//sterge simbolurile de dupa start, pana la sfarsit
 {
 	int contor = symbols->end - symbols->begin;
 
@@ -217,7 +217,7 @@ Type getArithType(Type* s1, Type* s2)
 			break;
 	}
 }
-
+//predicate Analiza sintactica, adica nonterminale
 int unit();
 int declStruct();
 int declVar();
@@ -288,13 +288,14 @@ char* codeName(int code)//ret. numele lui tk ID->>ID
 	}
 }
 
+//daca exista atomul cu codul specificat, il consuma si returneaza true.
 int consume(int code)
 {
 	printf("consume(%s)", codeName(code));
 	if (crtTk->code == code) {
 		printf("=>consumat\n");
 		consumedTk = crtTk;
-		crtTk = crtTk->next;
+		crtTk = crtTk->next;//consuma
 		return 1;
 	}
 	else {
@@ -333,12 +334,12 @@ int declStruct()
 {
 	printf("@declStruct %s\n", codeName(crtTk->code));
 	Token* start = crtTk;
-	int isDS = 0; //is declVar
+	int isDS = 0; //is declStruct
 	if (consume(STRUCT))
 	{
 		if (consume(ID))
 		{
-			Token* tkName = consumedTk;
+			Token* tkName = consumedTk; //tkName va fi tot token-ul ID
 			if (consume(LACC))
 			{
 				isDS = 1;
@@ -348,7 +349,6 @@ int declStruct()
 					crtStruct = addSymbol(&symbols, tkName->text, CLS_STRUCT);
 					initSymbols(&crtStruct->members);
 				}
-				//while(declVar()){}
 				for (;;)
 				{
 					if (declVar())
